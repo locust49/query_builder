@@ -44,3 +44,6 @@ cover/
 # Log files
 *.log
 */*.log
+
+# config files
+config/dbConfig.py
