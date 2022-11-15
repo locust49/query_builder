@@ -4,12 +4,6 @@ from config.dbConfig import db_config
 from config.loggingConfig import rootLogger
 
 
-# cursor = connection.cursor()
-
-# cursor.execute("SELECT * FROM test")
-# print(cursor.fetchone())
-
-
 class MyDatabase(object):
     def __init__(self):
         try:
@@ -18,8 +12,9 @@ class MyDatabase(object):
             rootLogger.info(
                 "Connecting to database [{}].".format(db_config["database"])
             )
-        except:
-            rootLogger.error("Error occured during connection {}".format(db_config))
+        except psycopg2.DatabaseError as error:
+            rootLogger.info("An error occured during connection {}\n".format(db_config))
+            rootLogger.error(error)
 
     def getCursor(self) -> Any:
         return self.__cursor

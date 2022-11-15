@@ -6,15 +6,19 @@ from query import Query
 
 class Entity:
     name: str = ""
-    fields: list[tuple[str, Types, Constraints | None]] = []
+    fields: list[tuple[str, Types, Constraints | list[Constraints] | None]] = []
 
     def __init__(
-        self, entityName, entityFields: list[tuple[str, Types, Constraints | None]]
+        self,
+        entityName,
+        entityFields: list[tuple[str, Types, Constraints | list[Constraints] | None]],
     ) -> None:
         assert all(
             isinstance(element, tuple)
             and (
                 list(map(type, element)) == [str, Types, Constraints]
+                or list(map(type, element))
+                == [str, Types, list]  # TODO verify list elements
                 or list(map(type, element)) == [str, Types, NoneType]
             )
             for element in entityFields
@@ -26,8 +30,20 @@ class Entity:
         self.fields = entityFields
         rootLogger.info("Instanciating {}".format(self.__class__.__name__))
 
-    def create(self, db):
-        db.executeQuery(Query.create_entity(self))
+    def create(self, db) -> bool:
+        try:
+            db.executeQuery(Query.create_entity(self))
+            return True
+        except:
+            return False
 
-    def save(self, db):
-        self.queries.save_record(self)
+    def save(self, db, record: tuple | list[tuple]) -> bool:
+        try:
+            save_query = Query.save_record(self, record)
+            if save_query is not None:
+                db.executeQuery(save_query)
+            else:
+                return False
+            return True
+        except:
+            return False

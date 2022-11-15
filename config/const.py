@@ -1,11 +1,19 @@
 from enum import Enum
+from types import DynamicClassAttribute
 
 # Logging file name
 logFileName = "query-builder"
 
 
+class MyEnum(Enum):
+    @DynamicClassAttribute
+    def value(self):
+        """The value of the Enum member in uppercase."""
+        return self._value_.upper()
+
+
 # Enums
-class Keyword(Enum):
+class Keyword(MyEnum):
     SELECT = "select"
     WHERE = "where"
     FROM = "from"
@@ -20,14 +28,16 @@ class Keyword(Enum):
     INSERT = "insert into"
 
 
-class Types(Enum):
+class Types(MyEnum):
     ID = "id"
     INT = "int"
     TEXT = "text"
+    SERIAL = "serial"
 
 
-class Constraints(Enum):
+class Constraints(MyEnum):
     PRIMARY_KEY = "primary key"
     NOT_NULL = "not null"
     NULL = "null"
+    UNIQUE = "unique"
     FOREIGN_KEY = "foreign key"
